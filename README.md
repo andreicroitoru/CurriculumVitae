@@ -2,56 +2,72 @@
 
 Site-ul meu personal de prezentare / CV, în română și engleză.
 
-**Live:** https://andreicroitoru.github.io/CurriculumVitae/
+- **Site:** https://andreicroitoru.github.io/CurriculumVitae/
+- **Admin:** https://andreicroitoru.github.io/CurriculumVitae/admin.html
 
 HTML, CSS și JavaScript simplu (ES modules), fără framework și fără pas de build.
-Publicat cu GitHub Pages direct din ramura `main`.
+Conținutul CV-ului stă în **Supabase** (Postgres), site-ul e publicat cu GitHub Pages din ramura `main`.
+
+## Cum funcționează
+
+- `index.html` citește CV-ul din Supabase cu cheia *publishable* (publică, doar citire).
+- `admin.html` - login cu email + parolă (Supabase Auth). Doar conturile din tabelul `admin_users` pot modifica date.
+- Regulile de acces sunt în baza de date (Row Level Security), nu în JavaScript: oricine poate citi, doar adminii pot scrie.
 
 ## Structură
 
 ```
-index.html                        scheletul paginii (header, main, footer)
+index.html                        site-ul public
+admin.html                        pagina de editare
 css/
   variables.css                   culori, fonturi, dimensiuni (temă luminoasă + întunecată)
   base.css                        reset și butoane
   header.css                      header-ul sticky și comutatorul RO/EN
   sections.css                    secțiunile CV-ului
+  admin.css                       stiluri pentru admin
 js/
-  main.js                         CvApp - pornește aplicația, schimbă limba
-  data/cvData.js                  conținutul CV-ului
+  config.js                       URL-ul proiectului Supabase + cheia publishable
+  main.js                         CvApp - încarcă CV-ul și schimbă limba
+  services/supabaseClient.js      clientul Supabase
+  services/CvRepository.js        citește tabelele și le transformă pentru CvRenderer
   i18n/translations.js            textele interfeței în RO și EN
-  components/CvRenderer.js        generează HTML-ul secțiunilor din cvData
+  components/CvRenderer.js        generează HTML-ul secțiunilor
   components/LanguageSwitcher.js  comutatorul RO/EN (tap, drag, tastatură)
-  utils/DateFormatter.js          perioade și durate ("iun. 2018 – Prezent", "8 ani 5 luni")
-  utils/SpringAnimation.js        animație de tip spring pentru comutator
-  utils/escapeHtml.js
-assets/favicon.svg
+  admin/AdminApp.js               login, tab-uri, notificări
+  admin/AuthService.js            login / logout / verificare admin
+  admin/TableEditor.js            editor generic pentru un tabel (adaugă, salvează, șterge)
+  admin/editorSchemas.js          ce câmpuri apar în formular pentru fiecare tabel
+  utils/                          DateFormatter, SpringAnimation, escapeHtml
+supabase/
+  migrations/                     schema bazei de date + reguli RLS
+  seed.sql                        datele inițiale ale CV-ului
 ```
 
-## Actualizare CV
+## Baza de date
 
-Tot conținutul e în `js/data/cvData.js`. Un job nou, de exemplu:
+| Tabel | Conținut |
+|---|---|
+| `profile` | un singur rând: nume, rol, locație, „Despre” |
+| `work_experience` | joburi (`end_date` gol = job actual) |
+| `education` | studii |
+| `certifications` | certificări (`skill_level` 1–3) |
+| `skills` | competențe |
+| `admin_users` | cine poate edita |
 
-```js
-{
-  jobTitle: { ro: "Senior Developer", en: "Senior Developer" },
-  companyName: "Firma X",
-  location: { ro: "București, România", en: "Bucharest, Romania" },
-  startDate: "2026-11",
-  endDate: null, // null = încă lucrez acolo
-  logoInitials: "FX",
-  logoColor: "#444444",
-},
+Proiect nou de la zero: rulează în SQL Editor fișierul din `supabase/migrations/`, apoi `supabase/seed.sql`,
+creează un user în Authentication și adaugă-l ca admin:
+
+```sql
+insert into public.admin_users (user_id)
+select id from auth.users where email = 'email@exemplu.com';
 ```
 
-După commit + push, GitHub Pages republică site-ul în ~1 minut.
+Un câmp nou în CV = coloană nouă în tabel + câmp în `js/admin/editorSchemas.js` + afișare în `CvRepository.js` / `CvRenderer.js`.
 
 ## Rulare locală
-
-Fiind ES modules, pagina trebuie servită printr-un server (nu merge deschisă direct cu `file://`):
 
 ```bash
 python3 -m http.server 8000
 ```
 
-apoi http://localhost:8000
+apoi http://localhost:8000 (ES modules nu merg deschise direct cu `file://`).

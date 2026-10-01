@@ -6,8 +6,8 @@
 // Never put the service_role / secret key here.
 
 export const supabaseConfig = {
-  projectUrl: "https://YOUR-PROJECT-REF.supabase.co",
-  publishableKey: "YOUR-PUBLISHABLE-KEY",
+  projectUrl: "https://byvlkmutxfqhrsizjsiz.supabase.co",
+  publishableKey: "sb_publishable_1fYO3CmFp7kZYijOKdLDSw_4Tl3MPDI",
 };
 
 export const isSupabaseConfigured =
