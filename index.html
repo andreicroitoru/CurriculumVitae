@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ro">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Andrei Croitoru</title>
+  <meta name="description" content="Andrei Croitoru — Low Code Engineer la Plant an App. CV și prezentare.">
+  <meta property="og:title" content="Andrei Croitoru">
+  <meta property="og:description" content="Low Code Engineer la Plant an App, București.">
+  <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<header class="bar">
+  <div class="bar-in">
+    <span class="bar-name">Andrei Croitoru</span>
+    <nav class="bar-nav" aria-label="Secțiuni">
+      <a href="#despre" data-t="nav.about">Despre</a>
+      <a href="#experienta" data-t="nav.exp">Experiență</a>
+      <a href="#educatie" data-t="nav.edu">Educație</a>
+      <a href="#certificari" data-t="nav.certs">Certificări</a>
+      <a href="#contact" data-t="nav.contact">Contact</a>
+    </nav>
+    <div class="seg" id="lang" role="radiogroup" aria-label="Limbă / Language">
+      <div class="seg-thumb" id="thumb"></div>
+      <button type="button" id="lang-ro" role="radio" aria-checked="true" data-lang="ro">RO</button>
+      <button type="button" id="lang-en" role="radio" aria-checked="false" data-lang="en">EN</button>
+    </div>
+  </div>
+</header>
+
+<main id="app" data-swap>
+  <!-- Rendered from CV data below -->
+</main>
+
+<footer>
+  <span data-t="footer.src">Sursă: profilul LinkedIn</span>
+  <span id="updated"></span>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
