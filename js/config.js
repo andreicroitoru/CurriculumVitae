@@ -10,5 +10,3 @@ export const supabaseConfig = {
   publishableKey: "sb_publishable_1fYO3CmFp7kZYijOKdLDSw_4Tl3MPDI",
 };
 
-export const isSupabaseConfigured =
-  !supabaseConfig.projectUrl.includes("YOUR-PROJECT-REF") && !supabaseConfig.publishableKey.startsWith("YOUR-");

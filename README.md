@@ -28,8 +28,8 @@ css/
 js/
   config.js                       URL-ul proiectului Supabase + cheia publishable
   main.js                         CvApp - încarcă CV-ul și schimbă limba
-  services/supabaseClient.js      clientul Supabase
-  services/CvRepository.js        citește tabelele și le transformă pentru CvRenderer
+  services/supabaseClient.js      clientul Supabase (folosit doar de admin)
+  services/CvRepository.js        citește tabelele cu fetch() și le transformă pentru CvRenderer
   i18n/translations.js            textele interfeței în RO și EN
   components/CvRenderer.js        generează HTML-ul secțiunilor
   components/LanguageSwitcher.js  comutatorul RO/EN (tap, drag, tastatură)

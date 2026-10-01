@@ -1,8 +1,8 @@
 import { translations, supportedLanguages, defaultLanguage } from "./i18n/translations.js";
-import { isSupabaseConfigured } from "./config.js";
 import { CvRenderer } from "./components/CvRenderer.js";
 import { LanguageSwitcher } from "./components/LanguageSwitcher.js";
 import { DateFormatter } from "./utils/DateFormatter.js";
+import { CvRepository } from "./services/CvRepository.js";
 
 const LANGUAGE_STORAGE_KEY = "cvPreferredLanguage";
 const FADE_DURATION_MS = 180; // keep in sync with .pageContent transition in sections.css
@@ -28,25 +28,13 @@ class CvApp {
     this.renderPage(this.currentLanguage);
 
     try {
-      this.cvData = await this.loadCvData();
+      this.cvData = await new CvRepository().fetchCv();
       this.cvRenderer = new CvRenderer(this.cvData, translations);
       this.renderPage(this.currentLanguage);
     } catch (error) {
       console.error("Could not load CV from Supabase", error);
       this.showStatusMessage(translations[this.currentLanguage].loadingFailed);
     }
-  }
-
-  async loadCvData() {
-    if (!isSupabaseConfigured) {
-      throw new Error("Supabase is not configured yet - fill in js/config.js");
-    }
-
-    // Imported lazily so the page still renders its shell if the CDN is down
-    const { supabaseClient } = await import("./services/supabaseClient.js");
-    const { CvRepository } = await import("./services/CvRepository.js");
-
-    return new CvRepository(supabaseClient).fetchCv();
   }
 
   changeLanguage(language) {

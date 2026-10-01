@@ -1,6 +1,8 @@
-import { isSupabaseConfigured } from "../config.js";
 import { escapeHtml } from "../utils/escapeHtml.js";
 import { editorSchemas } from "./editorSchemas.js";
+import { supabaseClient } from "../services/supabaseClient.js";
+import { AuthService } from "./AuthService.js";
+import { TableEditor } from "./TableEditor.js";
 
 const TOAST_VISIBLE_MS = 2200;
 
@@ -16,26 +18,13 @@ class AdminApp {
     this.editorContainer = document.getElementById("editorContainer");
     this.toastElement = document.getElementById("toast");
 
+    this.authService = new AuthService(supabaseClient);
     this.tableEditors = new Map();
     this.activeTableName = editorSchemas[0].tableName;
     this.toastTimeoutId = null;
   }
 
   async start() {
-    if (!isSupabaseConfigured) {
-      this.showLoginError("Supabase nu e configurat încă. Completează js/config.js.");
-      this.loginForm.querySelector("button").disabled = true;
-      return;
-    }
-
-    const { supabaseClient } = await import("../services/supabaseClient.js");
-    const { AuthService } = await import("./AuthService.js");
-    const { TableEditor } = await import("./TableEditor.js");
-
-    this.supabaseClient = supabaseClient;
-    this.authService = new AuthService(supabaseClient);
-    this.TableEditor = TableEditor;
-
     this.loginForm.addEventListener("submit", (event) => this.handleLogin(event));
     this.signOutButton.addEventListener("click", () => this.handleSignOut());
     this.tabListElement.addEventListener("click", (event) => this.handleTabClick(event));
@@ -126,8 +115,8 @@ class AdminApp {
       editorElement.className = "tableEditor";
       this.editorContainer.append(editorElement);
 
-      const tableEditor = new this.TableEditor(editorElement, schema, {
-        supabaseClient: this.supabaseClient,
+      const tableEditor = new TableEditor(editorElement, schema, {
+        supabaseClient,
         showToast: (message, options) => this.showToast(message, options),
       });
 

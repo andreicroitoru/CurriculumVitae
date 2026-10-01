@@ -1,27 +1,25 @@
+import { supabaseConfig } from "../config.js";
+
 // Reads the CV from Supabase and turns the database rows into the shape
 // CvRenderer works with (camelCase fields, { ro, en } pairs, "YYYY-MM" dates).
+//
+// The public page only reads, so it talks to the REST API with plain fetch()
+// instead of loading supabase-js (~77 KB, 9 extra requests). admin.html still uses supabase-js for auth.
 export class CvRepository {
-  constructor(supabaseClient) {
-    this.supabaseClient = supabaseClient;
-  }
-
   async fetchCv() {
-    // All five queries run in parallel, the page needs every one of them anyway
-    const [profileResult, experienceResult, educationResult, certificationsResult, skillsResult] = await Promise.all([
-      this.supabaseClient.from("profile").select("*").eq("id", 1).single(),
-      this.supabaseClient.from("work_experience").select("*").order("sort_order"),
-      this.supabaseClient.from("education").select("*").order("sort_order"),
-      this.supabaseClient.from("certifications").select("*").order("sort_order"),
-      this.supabaseClient.from("skills").select("*").order("sort_order"),
+    // All five requests run in parallel, the page needs every one of them anyway
+    const [profileRows, experienceRows, educationRows, certificationRows, skillRows] = await Promise.all([
+      fetchRows("profile", "id=eq.1"),
+      fetchRows("work_experience", "order=sort_order"),
+      fetchRows("education", "order=sort_order"),
+      fetchRows("certifications", "order=sort_order"),
+      fetchRows("skills", "order=sort_order"),
     ]);
 
-    const firstError = [profileResult, experienceResult, educationResult, certificationsResult, skillsResult].find(
-      (result) => result.error
-    )?.error;
-    if (firstError) throw firstError;
+    const profileRow = profileRows[0];
+    if (!profileRow) throw new Error("The profile table is empty - run supabase/seed.sql");
 
-    const profileRow = profileResult.data;
-    const allUpdateDates = [profileRow, ...experienceResult.data, ...educationResult.data, ...certificationsResult.data]
+    const allUpdateDates = [profileRow, ...experienceRows, ...educationRows, ...certificationRows]
       .map((row) => row.updated_at)
       .sort();
 
@@ -36,7 +34,7 @@ export class CvRepository {
       },
       aboutMe: toTranslatedText(profileRow.about_ro, profileRow.about_en),
 
-      workExperience: experienceResult.data.map((row) => ({
+      workExperience: experienceRows.map((row) => ({
         jobTitle: toTranslatedText(row.job_title_ro, row.job_title_en),
         companyName: row.company_name,
         location: row.location_ro ? toTranslatedText(row.location_ro, row.location_en) : null,
@@ -46,7 +44,7 @@ export class CvRepository {
         logoColor: row.logo_color,
       })),
 
-      education: educationResult.data.map((row) => ({
+      education: educationRows.map((row) => ({
         schoolName: toTranslatedText(row.school_name_ro, row.school_name_en),
         degreeName: toTranslatedText(row.degree_name_ro, row.degree_name_en),
         startYear: String(row.start_year),
@@ -55,7 +53,7 @@ export class CvRepository {
         logoColor: row.logo_color,
       })),
 
-      certifications: certificationsResult.data.map((row) => ({
+      certifications: certificationRows.map((row) => ({
         certificateName: row.certificate_name,
         skillLevel: row.skill_level,
         issuedBy: row.issued_by,
@@ -63,14 +61,25 @@ export class CvRepository {
       })),
 
       skills: {
-        ro: skillsResult.data.map((row) => row.name_ro),
-        en: skillsResult.data.map((row) => row.name_en),
+        ro: skillRows.map((row) => row.name_ro),
+        en: skillRows.map((row) => row.name_en),
       },
 
       // Most recent change anywhere in the CV, shown in the footer
       lastUpdated: toYearMonth(allUpdateDates[allUpdateDates.length - 1]),
     };
   }
+}
+
+async function fetchRows(tableName, queryString) {
+  const response = await fetch(`${supabaseConfig.projectUrl}/rest/v1/${tableName}?select=*&${queryString}`, {
+    headers: { apikey: supabaseConfig.publishableKey },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Loading ${tableName} failed: ${response.status} ${await response.text()}`);
+  }
+  return response.json();
 }
 
 // If the English text is missing, fall back to Romanian instead of showing nothing
