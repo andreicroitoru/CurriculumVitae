@@ -1,5 +1,5 @@
-import { cvData } from "./data/cvData.js";
 import { translations, supportedLanguages, defaultLanguage } from "./i18n/translations.js";
+import { isSupabaseConfigured } from "./config.js";
 import { CvRenderer } from "./components/CvRenderer.js";
 import { LanguageSwitcher } from "./components/LanguageSwitcher.js";
 import { DateFormatter } from "./utils/DateFormatter.js";
@@ -13,17 +13,40 @@ class CvApp {
     this.lastUpdatedElement = document.getElementById("lastUpdated");
     this.prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    this.cvRenderer = new CvRenderer(cvData, translations);
+    this.cvData = null;
+    this.cvRenderer = null;
     this.currentLanguage = this.loadSavedLanguage();
   }
 
-  start() {
-    this.renderPage(this.currentLanguage);
-
+  async start() {
+    // The switcher works even while the CV is loading, it just re-renders whatever is on screen
     new LanguageSwitcher(document.getElementById("languageSwitch"), {
       initialLanguage: this.currentLanguage,
       onLanguageChange: (language) => this.changeLanguage(language),
     });
+
+    this.renderPage(this.currentLanguage);
+
+    try {
+      this.cvData = await this.loadCvData();
+      this.cvRenderer = new CvRenderer(this.cvData, translations);
+      this.renderPage(this.currentLanguage);
+    } catch (error) {
+      console.error("Could not load CV from Supabase", error);
+      this.showStatusMessage(translations[this.currentLanguage].loadingFailed);
+    }
+  }
+
+  async loadCvData() {
+    if (!isSupabaseConfigured) {
+      throw new Error("Supabase is not configured yet - fill in js/config.js");
+    }
+
+    // Imported lazily so the page still renders its shell if the CDN is down
+    const { supabaseClient } = await import("./services/supabaseClient.js");
+    const { CvRepository } = await import("./services/CvRepository.js");
+
+    return new CvRepository(supabaseClient).fetchCv();
   }
 
   changeLanguage(language) {
@@ -46,17 +69,25 @@ class CvApp {
   renderPage(language) {
     const labels = translations[language];
 
-    this.pageContentElement.innerHTML = this.cvRenderer.render(language);
-
     // Static texts that live in index.html (nav links, footer) are marked with data-translation-key
     document.querySelectorAll("[data-translation-key]").forEach((element) => {
       element.textContent = labels[element.dataset.translationKey];
     });
-
-    const lastUpdatedText = new DateFormatter(labels).formatMonthYear(cvData.lastUpdated);
-    this.lastUpdatedElement.textContent = `${labels.footerUpdated} ${lastUpdatedText}`;
-
     document.documentElement.lang = language;
+
+    if (!this.cvData) {
+      this.showStatusMessage(labels.loadingCv);
+      return;
+    }
+
+    this.pageContentElement.innerHTML = this.cvRenderer.render(language);
+
+    const lastUpdatedText = new DateFormatter(labels).formatMonthYear(this.cvData.lastUpdated);
+    this.lastUpdatedElement.textContent = `${labels.footerUpdated} ${lastUpdatedText}`;
+  }
+
+  showStatusMessage(message) {
+    this.pageContentElement.innerHTML = `<p class="statusMessage">${message}</p>`;
   }
 
   // localStorage can throw in private mode / with blocked cookies, so it's wrapped

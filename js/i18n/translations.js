@@ -1,4 +1,4 @@
-// UI labels for both languages. CV content itself is in data/cvData.js.
+// UI labels for both languages. The CV content itself comes from Supabase.
 
 export const supportedLanguages = ["ro", "en"];
 export const defaultLanguage = "ro";
@@ -32,6 +32,9 @@ export const translations = {
 
     contactTitle: "Hai să vorbim",
     contactText: "Sunt deschis la proiecte și colaborări. Cel mai rapid mă găsești pe LinkedIn.",
+
+    loadingCv: "Se încarcă CV-ul…",
+    loadingFailed: "Nu am putut încărca CV-ul. Reîncearcă în câteva momente.",
 
     footerSource: "Sursă: profilul LinkedIn",
     footerUpdated: "Actualizat",
@@ -70,6 +73,9 @@ export const translations = {
 
     contactTitle: "Let's talk",
     contactText: "Open to projects and collaborations. LinkedIn is the fastest way to reach me.",
+
+    loadingCv: "Loading CV…",
+    loadingFailed: "Couldn't load the CV. Please try again in a moment.",
 
     footerSource: "Source: LinkedIn profile",
     footerUpdated: "Updated",

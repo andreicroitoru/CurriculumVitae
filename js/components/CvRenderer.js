@@ -1,7 +1,8 @@
 import { DateFormatter } from "../utils/DateFormatter.js";
 import { escapeHtml } from "../utils/escapeHtml.js";
 
-// Builds the main content of the page from cvData for a given language.
+// Builds the main content of the page for a given language.
+// cvData comes from CvRepository (already mapped from the database rows).
 export class CvRenderer {
   constructor(cvData, translations) {
     this.cvData = cvData;

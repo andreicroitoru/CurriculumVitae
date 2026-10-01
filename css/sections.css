@@ -11,6 +11,13 @@
   opacity: 0;
 }
 
+/* Loading / error text shown before the CV arrives from Supabase */
+.statusMessage {
+  margin: 4rem 0;
+  color: var(--colorTextMuted);
+  text-align: center;
+}
+
 .cvSection {
   padding-block: 0.5rem 2.75rem;
   scroll-margin-top: 4rem;

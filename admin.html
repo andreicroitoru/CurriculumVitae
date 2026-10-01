@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ro">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>CV Admin · Andrei Croitoru</title>
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/header.css">
+  <link rel="stylesheet" href="css/admin.css">
+
+  <script type="module" src="js/admin/AdminApp.js"></script>
+</head>
+<body>
+  <header class="siteHeader">
+    <div class="siteHeader__inner">
+      <span class="siteHeader__name">CV Admin</span>
+      <a class="adminHeaderLink" href="./">Vezi site-ul ›</a>
+    </div>
+  </header>
+
+  <main class="adminPage">
+    <!-- Login -->
+    <section class="loginCard" id="loginView" aria-labelledby="loginTitle">
+      <h1 class="loginCard__title" id="loginTitle">Autentificare</h1>
+      <p class="adminHint">Doar conturile adăugate în tabelul <code>admin_users</code> pot modifica CV-ul.</p>
+
+      <form class="loginCard__form" id="loginForm">
+        <div class="formField">
+          <label for="loginEmail">Email</label>
+          <input type="email" id="loginEmail" name="email" autocomplete="username" required>
+        </div>
+        <div class="formField">
+          <label for="loginPassword">Parolă</label>
+          <input type="password" id="loginPassword" name="password" autocomplete="current-password" required>
+        </div>
+        <p class="adminError" id="loginError" role="alert" hidden></p>
+        <button type="submit" class="button button--primary">Intră în cont</button>
+      </form>
+    </section>
+
+    <!-- Dashboard, shown after a successful admin login -->
+    <section class="dashboard" id="dashboardView" hidden>
+      <div class="dashboard__header">
+        <div>
+          <h1 class="dashboard__title">Editează CV-ul</h1>
+          <p class="adminHint">Conectat ca <span id="signedInEmail"></span></p>
+        </div>
+        <button type="button" class="button button--ghost" id="signOutButton">Ieși din cont</button>
+      </div>
+
+      <nav class="adminTabs" id="editorTabs" role="tablist" aria-label="Secțiuni CV"></nav>
+
+      <div id="editorContainer"></div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
