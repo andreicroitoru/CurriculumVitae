@@ -30,33 +30,6 @@ code {
   font-size: 0.85em;
 }
 
-/* ---- Buttons that only the admin needs ---- */
-
-.button {
-  border: 0;
-  cursor: pointer;
-  font-family: inherit;
-}
-
-.button:disabled {
-  opacity: 0.45;
-  cursor: default;
-  transform: none;
-}
-
-.button--ghost {
-  background: none;
-}
-
-.button--danger {
-  background: none;
-  color: var(--colorDanger);
-}
-
-.button--danger:hover {
-  background: var(--colorDangerSoft);
-}
-
 /* ---- Form fields ---- */
 
 .formField {

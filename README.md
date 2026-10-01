@@ -13,6 +13,7 @@ Conținutul CV-ului stă în **Supabase** (Postgres), site-ul e publicat cu GitH
 - `index.html` citește CV-ul din Supabase cu cheia *publishable* (publică, doar citire).
 - `admin.html` - login cu email + parolă (Supabase Auth). Doar conturile din tabelul `admin_users` pot modifica date.
 - Regulile de acces sunt în baza de date (Row Level Security), nu în JavaScript: oricine poate citi, doar adminii pot scrie.
+- Ambele pagini au Content-Security-Policy: scripturi doar de pe site (și supabase-js pe admin), conexiuni doar către proiectul Supabase.
 
 ## Structură
 
@@ -54,7 +55,7 @@ supabase/
 | `skills` | competențe |
 | `admin_users` | cine poate edita |
 
-Proiect nou de la zero: rulează în SQL Editor fișierul din `supabase/migrations/`, apoi `supabase/seed.sql`,
+Proiect nou de la zero: rulează în SQL Editor fișierele din `supabase/migrations/` în ordine, apoi `supabase/seed.sql`,
 creează un user în Authentication și adaugă-l ca admin:
 
 ```sql

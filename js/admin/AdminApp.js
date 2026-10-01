@@ -58,7 +58,7 @@ class AdminApp {
   }
 
   async openDashboardFor(user) {
-    const isAdmin = await this.authService.isCurrentUserAdmin();
+    const isAdmin = await this.authService.isCurrentUserAdmin(user);
 
     if (!isAdmin) {
       await this.authService.signOut();

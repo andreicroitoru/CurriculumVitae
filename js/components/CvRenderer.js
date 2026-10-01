@@ -47,7 +47,7 @@ export class CvRenderer {
           ${this.labels.atCompany} ${escapeHtml(personalInfo.currentCompany)}
         </p>
         <div class="profileHero__actions">
-          <a class="button button--primary" href="${personalInfo.linkedinUrl}" target="_blank" rel="noopener">${this.labels.viewOnLinkedin}</a>
+          <a class="button button--primary" href="${safeExternalUrl(personalInfo.linkedinUrl)}" target="_blank" rel="noopener">${this.labels.viewOnLinkedin}</a>
           <a class="button button--ghost" href="#contact">${this.labels.contactMe} ›</a>
         </div>
       </div>
@@ -191,13 +191,18 @@ export class CvRenderer {
         <div class="contactCard">
           <h2 class="cvSection__title" id="contactTitle">${this.labels.contactTitle}</h2>
           <p>${this.labels.contactText}</p>
-          <a class="button button--primary" href="${this.cvData.personalInfo.linkedinUrl}" target="_blank" rel="noopener">${this.labels.viewOnLinkedin}</a>
+          <a class="button button--primary" href="${safeExternalUrl(this.cvData.personalInfo.linkedinUrl)}" target="_blank" rel="noopener">${this.labels.viewOnLinkedin}</a>
         </div>
       </section>
     `;
   }
 
   renderLogo(initials, backgroundColor) {
-    return `<div class="timelineItem__logo" style="background:${backgroundColor}" aria-hidden="true">${escapeHtml(initials)}</div>`;
+    return `<div class="timelineItem__logo" style="background:${escapeHtml(backgroundColor)}" aria-hidden="true">${escapeHtml(initials)}</div>`;
   }
+}
+
+// Only https links make it into an href, anything else (javascript:, data:) becomes "#"
+function safeExternalUrl(url) {
+  return url?.startsWith("https://") ? escapeHtml(url) : "#";
 }

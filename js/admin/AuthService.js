@@ -20,11 +20,16 @@ export class AuthService {
     await this.supabaseClient.auth.signOut();
   }
 
-  // Being logged in isn't enough - the user also has to be in admin_users,
-  // otherwise RLS will reject every write anyway
-  async isCurrentUserAdmin() {
-    const { data, error } = await this.supabaseClient.rpc("is_admin");
+  // Being logged in isn't enough - the user also has to be in admin_users.
+  // RLS only lets a user see their own row there, so "row exists" = "is admin".
+  async isCurrentUserAdmin(user) {
+    const { data, error } = await this.supabaseClient
+      .from("admin_users")
+      .select("user_id")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
     if (error) throw error;
-    return data === true;
+    return data !== null;
   }
 }
