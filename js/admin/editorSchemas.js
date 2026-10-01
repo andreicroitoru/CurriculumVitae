@@ -1,7 +1,9 @@
-// Describes every editable table: which columns show up in the admin forms and how.
+// Describes every editable table: sidebar entry, list columns and form fields.
 //
 // Field types: text, url, textarea, month, year, number, color, select
-// width: "half" puts two fields side by side (RO / EN pairs mostly)
+// width: "half" puts two fields side by side in the dialog (RO / EN pairs mostly)
+// emptyLabel: what the list shows when the value is null (e.g. end_date -> "Prezent")
+// listColumns: which fields show up as columns in the table, in order
 
 const sortOrderField = {
   name: "sort_order",
@@ -15,7 +17,9 @@ export const editorSchemas = [
   {
     tableName: "profile",
     title: "Profil",
+    icon: "person",
     isSingleRow: true,
+    itemName: "profilul",
     fields: [
       { name: "full_name", label: "Nume complet", type: "text", required: true, width: "half" },
       { name: "avatar_initials", label: "Inițiale avatar", type: "text", required: true, width: "half" },
@@ -32,8 +36,9 @@ export const editorSchemas = [
   {
     tableName: "work_experience",
     title: "Experiență",
-    newRecordLabel: "Adaugă job",
-    describeRecord: (record) => `${record.job_title_ro || "Job nou"} · ${record.company_name || ""}`,
+    icon: "briefcase",
+    itemName: "job",
+    listColumns: ["job_title_ro", "company_name", "start_date", "end_date", "sort_order"],
     fields: [
       { name: "job_title_ro", label: "Titlu (RO)", type: "text", required: true, width: "half" },
       { name: "job_title_en", label: "Titlu (EN)", type: "text", required: true, width: "half" },
@@ -41,7 +46,14 @@ export const editorSchemas = [
       { name: "location_ro", label: "Locație (RO)", type: "text", width: "half" },
       { name: "location_en", label: "Locație (EN)", type: "text", width: "half" },
       { name: "start_date", label: "Început", type: "month", required: true, width: "half" },
-      { name: "end_date", label: "Sfârșit", type: "month", width: "half", hint: "Gol = lucrez încă aici" },
+      {
+        name: "end_date",
+        label: "Sfârșit",
+        type: "month",
+        width: "half",
+        hint: "Gol = lucrez încă aici",
+        emptyLabel: "Prezent",
+      },
       { name: "logo_initials", label: "Inițiale logo", type: "text", width: "half" },
       { name: "logo_color", label: "Culoare logo", type: "color", width: "half" },
       sortOrderField,
@@ -50,15 +62,16 @@ export const editorSchemas = [
   {
     tableName: "education",
     title: "Educație",
-    newRecordLabel: "Adaugă școală",
-    describeRecord: (record) => record.school_name_ro || "Școală nouă",
+    icon: "graduationCap",
+    itemName: "școală",
+    listColumns: ["school_name_ro", "degree_name_ro", "start_year", "end_year", "sort_order"],
     fields: [
       { name: "school_name_ro", label: "Instituție (RO)", type: "text", required: true, width: "half" },
       { name: "school_name_en", label: "Instituție (EN)", type: "text", required: true, width: "half" },
       { name: "degree_name_ro", label: "Diplomă (RO)", type: "text", width: "half" },
       { name: "degree_name_en", label: "Diplomă (EN)", type: "text", width: "half" },
       { name: "start_year", label: "An început", type: "year", required: true, width: "half" },
-      { name: "end_year", label: "An absolvire", type: "year", width: "half" },
+      { name: "end_year", label: "An absolvire", type: "year", width: "half", emptyLabel: "În curs" },
       { name: "logo_initials", label: "Inițiale logo", type: "text", width: "half" },
       { name: "logo_color", label: "Culoare logo", type: "color", width: "half" },
       sortOrderField,
@@ -67,8 +80,9 @@ export const editorSchemas = [
   {
     tableName: "certifications",
     title: "Certificări",
-    newRecordLabel: "Adaugă certificare",
-    describeRecord: (record) => `${record.certificate_name || "Certificare nouă"} · ${record.issued_by || ""}`,
+    icon: "badge",
+    itemName: "certificare",
+    listColumns: ["certificate_name", "skill_level", "issued_by", "issue_date", "sort_order"],
     fields: [
       { name: "certificate_name", label: "Nume", type: "text", required: true, width: "half" },
       {
@@ -90,8 +104,9 @@ export const editorSchemas = [
   {
     tableName: "skills",
     title: "Competențe",
-    newRecordLabel: "Adaugă competență",
-    describeRecord: (record) => record.name_ro || "Competență nouă",
+    icon: "sparkles",
+    itemName: "competență",
+    listColumns: ["name_ro", "name_en", "sort_order"],
     fields: [
       { name: "name_ro", label: "Nume (RO)", type: "text", required: true, width: "half" },
       { name: "name_en", label: "Nume (EN)", type: "text", required: true, width: "half" },

@@ -18,6 +18,17 @@
   --colorDanger: #d70015;
   --colorDangerSoft: rgba(215, 0, 21, 0.08);
 
+  /* Liquid glass (admin): translucent fill + bright top edge + soft shadow */
+  --glassFill: rgba(255, 255, 255, 0.58);
+  --glassFillStrong: rgba(255, 255, 255, 0.78);
+  --glassBorder: rgba(255, 255, 255, 0.7);
+  --glassHighlight: inset 0 1px 0 rgba(255, 255, 255, 0.9), inset 0 -1px 0 rgba(0, 0, 0, 0.03);
+  --glassShadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 12px 40px rgba(30, 40, 80, 0.1);
+  --colorRowHover: rgba(0, 102, 204, 0.05);
+  --ambientOne: rgba(0, 113, 227, 0.22);
+  --ambientTwo: rgba(47, 158, 91, 0.16);
+  --ambientThree: rgba(255, 149, 0, 0.14);
+
   --shadowCard: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.05);
 
   --fontText: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -46,6 +57,15 @@
     --colorSwitchThumb: #636366;
     --colorDanger: #ff453a;
     --colorDangerSoft: rgba(255, 69, 58, 0.14);
+    --glassFill: rgba(44, 44, 48, 0.5);
+    --glassFillStrong: rgba(44, 44, 48, 0.78);
+    --glassBorder: rgba(255, 255, 255, 0.12);
+    --glassHighlight: inset 0 1px 0 rgba(255, 255, 255, 0.14), inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+    --glassShadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+    --colorRowHover: rgba(41, 151, 255, 0.08);
+    --ambientOne: rgba(41, 151, 255, 0.24);
+    --ambientTwo: rgba(48, 209, 88, 0.14);
+    --ambientThree: rgba(255, 159, 10, 0.12);
     --shadowCard: none;
   }
 }
@@ -64,5 +84,14 @@
   --colorSwitchThumb: #636366;
   --colorDanger: #ff453a;
   --colorDangerSoft: rgba(255, 69, 58, 0.14);
+  --glassFill: rgba(44, 44, 48, 0.5);
+  --glassFillStrong: rgba(44, 44, 48, 0.78);
+  --glassBorder: rgba(255, 255, 255, 0.12);
+  --glassHighlight: inset 0 1px 0 rgba(255, 255, 255, 0.14), inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+  --glassShadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+  --colorRowHover: rgba(41, 151, 255, 0.08);
+  --ambientOne: rgba(41, 151, 255, 0.24);
+  --ambientTwo: rgba(48, 209, 88, 0.14);
+  --ambientThree: rgba(255, 159, 10, 0.12);
   --shadowCard: none;
 }

@@ -12,24 +12,20 @@
 
   <link rel="stylesheet" href="css/variables.css">
   <link rel="stylesheet" href="css/base.css">
-  <link rel="stylesheet" href="css/header.css">
   <link rel="stylesheet" href="css/admin.css">
 
   <script type="module" src="js/admin/AdminApp.js"></script>
 </head>
-<body>
-  <header class="siteHeader">
-    <div class="siteHeader__inner">
-      <span class="siteHeader__name">CV Admin</span>
-      <a class="adminHeaderLink" href="./">Vezi site-ul ›</a>
-    </div>
-  </header>
+<body class="adminBody">
+  <!-- Soft colored light behind the glass panels, otherwise there's nothing to blur -->
+  <div class="ambientLight" aria-hidden="true"></div>
 
-  <main class="adminPage">
-    <!-- Login -->
-    <section class="loginCard" id="loginView" aria-labelledby="loginTitle">
-      <h1 class="loginCard__title" id="loginTitle">Autentificare</h1>
-      <p class="adminHint">Doar conturile adăugate în tabelul <code>admin_users</code> pot modifica CV-ul.</p>
+  <!-- Login -->
+  <main class="loginScreen" id="loginView">
+    <section class="glassCard loginCard" aria-labelledby="loginTitle">
+      <div class="loginCard__avatar" aria-hidden="true">AC</div>
+      <h1 class="loginCard__title" id="loginTitle">CV Admin</h1>
+      <p class="adminHint">Doar conturile din tabelul <code>admin_users</code> pot modifica CV-ul.</p>
 
       <form class="loginCard__form" id="loginForm">
         <div class="formField">
@@ -43,23 +39,72 @@
         <p class="adminError" id="loginError" role="alert" hidden></p>
         <button type="submit" class="button button--primary">Intră în cont</button>
       </form>
-    </section>
 
-    <!-- Dashboard, shown after a successful admin login -->
-    <section class="dashboard" id="dashboardView" hidden>
-      <div class="dashboard__header">
-        <div>
-          <h1 class="dashboard__title">Editează CV-ul</h1>
-          <p class="adminHint">Conectat ca <span id="signedInEmail"></span></p>
-        </div>
-        <button type="button" class="button button--ghost" id="signOutButton">Ieși din cont</button>
-      </div>
-
-      <nav class="adminTabs" id="editorTabs" role="tablist" aria-label="Secțiuni CV"></nav>
-
-      <div id="editorContainer"></div>
+      <a class="adminHint" href="./">← Înapoi la site</a>
     </section>
   </main>
+
+  <!-- Dashboard: sidebar with tabs + one view per table -->
+  <div class="adminLayout" id="dashboardView" hidden>
+    <aside class="glassPanel adminSidebar">
+      <div class="adminSidebar__brand">
+        <span class="adminSidebar__avatar" aria-hidden="true">AC</span>
+        <div>
+          <strong>CV Admin</strong>
+          <span class="adminHint adminSidebar__email" id="signedInEmail"></span>
+        </div>
+      </div>
+
+      <nav class="sidebarNav" id="sidebarNav" aria-label="Secțiuni CV"></nav>
+
+      <div class="adminSidebar__footer">
+        <a class="sidebarNav__item" href="./" target="_blank" rel="noopener">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/></svg>
+          <span class="sidebarNav__label">Vezi site-ul</span>
+        </a>
+        <button type="button" class="sidebarNav__item" id="signOutButton">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h11"/></svg>
+          <span class="sidebarNav__label">Ieși din cont</span>
+        </button>
+      </div>
+    </aside>
+
+    <main class="adminMain" id="viewsContainer"></main>
+  </div>
+
+  <!-- Add / edit pop-up, filled in by RecordDialog.js -->
+  <dialog class="glassDialog" id="recordDialog" aria-labelledby="recordDialogTitle">
+    <form novalidate>
+      <header class="glassDialog__header">
+        <h2 class="glassDialog__title" id="recordDialogTitle"></h2>
+        <button type="button" class="iconButton" data-close aria-label="Închide">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
+      </header>
+      <div class="glassDialog__body">
+        <div class="formGrid"></div>
+      </div>
+      <footer class="glassDialog__footer">
+        <span class="formStatus" aria-live="polite"></span>
+        <button type="button" class="button button--ghost" data-close>Anulează</button>
+        <button type="submit" class="button button--primary">Salvează</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <!-- Delete confirmation, used by ConfirmDialog.js -->
+  <dialog class="glassDialog glassDialog--small" id="confirmDialog" aria-labelledby="confirmDialogTitle">
+    <header class="glassDialog__header">
+      <h2 class="glassDialog__title" id="confirmDialogTitle"></h2>
+    </header>
+    <div class="glassDialog__body">
+      <p class="confirmDialog__message"></p>
+    </div>
+    <footer class="glassDialog__footer">
+      <button type="button" class="button button--ghost" data-close>Anulează</button>
+      <button type="button" class="button button--destructive" data-confirm>Șterge</button>
+    </footer>
+  </dialog>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </body>

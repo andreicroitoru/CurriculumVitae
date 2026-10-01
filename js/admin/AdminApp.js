@@ -1,10 +1,14 @@
 import { escapeHtml } from "../utils/escapeHtml.js";
-import { editorSchemas } from "./editorSchemas.js";
 import { supabaseClient } from "../services/supabaseClient.js";
+import { editorSchemas } from "./editorSchemas.js";
+import { icons } from "./icons.js";
 import { AuthService } from "./AuthService.js";
-import { TableEditor } from "./TableEditor.js";
+import { TableView } from "./TableView.js";
+import { RecordDialog } from "./RecordDialog.js";
+import { ConfirmDialog } from "./ConfirmDialog.js";
 
 const TOAST_VISIBLE_MS = 2200;
+const ACTIVE_TAB_STORAGE_KEY = "cvAdminActiveTab";
 
 class AdminApp {
   constructor() {
@@ -14,20 +18,23 @@ class AdminApp {
     this.loginErrorElement = document.getElementById("loginError");
     this.signedInEmailElement = document.getElementById("signedInEmail");
     this.signOutButton = document.getElementById("signOutButton");
-    this.tabListElement = document.getElementById("editorTabs");
-    this.editorContainer = document.getElementById("editorContainer");
+    this.sidebarNavElement = document.getElementById("sidebarNav");
+    this.viewsContainer = document.getElementById("viewsContainer");
     this.toastElement = document.getElementById("toast");
 
     this.authService = new AuthService(supabaseClient);
-    this.tableEditors = new Map();
-    this.activeTableName = editorSchemas[0].tableName;
+    this.recordDialog = new RecordDialog(document.getElementById("recordDialog"));
+    this.confirmDialog = new ConfirmDialog(document.getElementById("confirmDialog"));
+
+    this.tableViews = new Map(); // tableName -> { tableView, viewElement }
+    this.activeTableName = this.loadSavedTab();
     this.toastTimeoutId = null;
   }
 
   async start() {
     this.loginForm.addEventListener("submit", (event) => this.handleLogin(event));
     this.signOutButton.addEventListener("click", () => this.handleSignOut());
-    this.tabListElement.addEventListener("click", (event) => this.handleTabClick(event));
+    this.sidebarNavElement.addEventListener("click", (event) => this.handleSidebarClick(event));
 
     // Already logged in from a previous visit? Skip the login screen.
     const currentUser = await this.authService.getCurrentUser();
@@ -49,9 +56,7 @@ class AdminApp {
       const user = await this.authService.signIn(formData.get("email"), formData.get("password"));
       await this.openDashboardFor(user);
     } catch (error) {
-      this.showLoginError(
-        error.message === "Invalid login credentials" ? "Email sau parolă greșită." : error.message
-      );
+      this.showLoginError(error.message === "Invalid login credentials" ? "Email sau parolă greșită." : error.message);
     } finally {
       submitButton.disabled = false;
     }
@@ -71,62 +76,93 @@ class AdminApp {
     this.loginView.hidden = true;
     this.dashboardView.hidden = false;
 
-    this.renderTabs();
-    await this.openEditor(this.activeTableName);
+    this.renderSidebar();
+    this.createTableViews();
+    this.showView(this.activeTableName);
+
+    // Load every table up front: they're tiny, and the sidebar can show all the counts right away
+    await Promise.all([...this.tableViews.values()].map(({ tableView }) => tableView.load()));
   }
 
   async handleSignOut() {
     await this.authService.signOut();
-    this.tableEditors.clear();
+    this.tableViews.clear();
+    this.viewsContainer.innerHTML = "";
     this.dashboardView.hidden = true;
     this.loginView.hidden = false;
   }
 
-  renderTabs() {
-    this.tabListElement.innerHTML = editorSchemas
+  renderSidebar() {
+    this.sidebarNavElement.innerHTML = editorSchemas
       .map(
         (schema) => `
-        <button type="button" role="tab" class="adminTabs__tab" id="tab-${schema.tableName}"
-          data-table-name="${schema.tableName}"
-          aria-selected="${schema.tableName === this.activeTableName}">
-          ${escapeHtml(schema.title)}
+        <button type="button" class="sidebarNav__item" data-table-name="${schema.tableName}"
+          aria-controls="view-${schema.tableName}">
+          ${icons[schema.icon]}
+          <span class="sidebarNav__label">${escapeHtml(schema.title)}</span>
+          ${schema.isSingleRow ? "" : `<span class="sidebarNav__count" data-count-for="${schema.tableName}"></span>`}
         </button>`
       )
       .join("");
   }
 
-  async handleTabClick(event) {
-    const tabButton = event.target.closest("[data-table-name]");
-    if (!tabButton) return;
+  createTableViews() {
+    for (const schema of editorSchemas) {
+      const viewElement = document.createElement("section");
+      viewElement.className = "adminView";
+      viewElement.id = `view-${schema.tableName}`;
+      viewElement.innerHTML = `<p class="adminHint">Se încarcă…</p>`;
+      this.viewsContainer.append(viewElement);
 
-    this.activeTableName = tabButton.dataset.tableName;
-    this.tabListElement.querySelectorAll("[role=tab]").forEach((tab) => {
-      tab.setAttribute("aria-selected", String(tab === tabButton));
-    });
-
-    await this.openEditor(this.activeTableName);
-  }
-
-  // Each table gets its own container, created the first time its tab is opened
-  async openEditor(tableName) {
-    if (!this.tableEditors.has(tableName)) {
-      const schema = editorSchemas.find((item) => item.tableName === tableName);
-      const editorElement = document.createElement("div");
-      editorElement.className = "tableEditor";
-      this.editorContainer.append(editorElement);
-
-      const tableEditor = new TableEditor(editorElement, schema, {
+      const tableView = new TableView(viewElement, schema, {
         supabaseClient,
+        recordDialog: this.recordDialog,
+        confirmDialog: this.confirmDialog,
         showToast: (message, options) => this.showToast(message, options),
+        onRowCountChange: (tableName, rowCount) => this.updateSidebarCount(tableName, rowCount),
       });
 
-      this.tableEditors.set(tableName, { tableEditor, editorElement });
-      await tableEditor.load();
+      this.tableViews.set(schema.tableName, { tableView, viewElement });
     }
+  }
 
-    this.tableEditors.forEach(({ editorElement }, name) => {
-      editorElement.hidden = name !== tableName;
+  handleSidebarClick(event) {
+    const navItem = event.target.closest("[data-table-name]");
+    if (navItem) this.showView(navItem.dataset.tableName);
+  }
+
+  showView(tableName) {
+    if (!this.tableViews.has(tableName)) tableName = editorSchemas[0].tableName;
+    this.activeTableName = tableName;
+
+    this.tableViews.forEach(({ viewElement }, name) => {
+      viewElement.hidden = name !== tableName;
     });
+    this.sidebarNavElement.querySelectorAll("[data-table-name]").forEach((navItem) => {
+      const isActive = navItem.dataset.tableName === tableName;
+      navItem.classList.toggle("isActive", isActive);
+      if (isActive) navItem.setAttribute("aria-current", "page");
+      else navItem.removeAttribute("aria-current");
+    });
+
+    try {
+      localStorage.setItem(ACTIVE_TAB_STORAGE_KEY, tableName);
+    } catch {
+      // private mode - not remembering the tab is fine
+    }
+  }
+
+  loadSavedTab() {
+    try {
+      return localStorage.getItem(ACTIVE_TAB_STORAGE_KEY) ?? editorSchemas[0].tableName;
+    } catch {
+      return editorSchemas[0].tableName;
+    }
+  }
+
+  updateSidebarCount(tableName, rowCount) {
+    const countElement = this.sidebarNavElement.querySelector(`[data-count-for="${tableName}"]`);
+    if (countElement) countElement.textContent = rowCount;
   }
 
   showLoginError(message) {

@@ -11,7 +11,7 @@ Conținutul CV-ului stă în **Supabase** (Postgres), site-ul e publicat cu GitH
 ## Cum funcționează
 
 - `index.html` citește CV-ul din Supabase cu cheia *publishable* (publică, doar citire).
-- `admin.html` - login cu email + parolă (Supabase Auth). Doar conturile din tabelul `admin_users` pot modifica date.
+- `admin.html` - login cu email + parolă (Supabase Auth). Sidebar cu tab-uri, câte o listă per tabel, adăugare / editare în pop-up (`<dialog>`), confirmare la ștergere. Doar conturile din tabelul `admin_users` pot modifica date.
 - Regulile de acces sunt în baza de date (Row Level Security), nu în JavaScript: oricine poate citi, doar adminii pot scrie.
 - Ambele pagini au Content-Security-Policy: scripturi doar de pe site (și supabase-js pe admin), conexiuni doar către proiectul Supabase.
 
@@ -25,7 +25,7 @@ css/
   base.css                        reset și butoane
   header.css                      header-ul sticky și comutatorul RO/EN
   sections.css                    secțiunile CV-ului
-  admin.css                       stiluri pentru admin
+  admin.css                       admin: sidebar, tabele, pop-up-uri, efect „liquid glass”
 js/
   config.js                       URL-ul proiectului Supabase + cheia publishable
   main.js                         CvApp - încarcă CV-ul și schimbă limba
@@ -34,10 +34,13 @@ js/
   i18n/translations.js            textele interfeței în RO și EN
   components/CvRenderer.js        generează HTML-ul secțiunilor
   components/LanguageSwitcher.js  comutatorul RO/EN (tap, drag, tastatură)
-  admin/AdminApp.js               login, tab-uri, notificări
+  admin/AdminApp.js               login, sidebar, comutare între tab-uri, notificări
   admin/AuthService.js            login / logout / verificare admin
-  admin/TableEditor.js            editor generic pentru un tabel (adaugă, salvează, șterge)
-  admin/editorSchemas.js          ce câmpuri apar în formular pentru fiecare tabel
+  admin/TableView.js              un tab: lista unui tabel + adaugă / editează / șterge
+  admin/RecordDialog.js           pop-up-ul cu formular (adăugare și editare)
+  admin/ConfirmDialog.js          pop-up-ul de confirmare la ștergere
+  admin/editorSchemas.js          pentru fiecare tabel: icon, coloane în listă, câmpuri în formular
+  admin/icons.js                  iconițe SVG
   utils/                          DateFormatter, SpringAnimation, escapeHtml
 supabase/
   migrations/                     schema bazei de date + reguli RLS
