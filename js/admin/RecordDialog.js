@@ -84,9 +84,12 @@ export class RecordDialog {
         inputHtml = `<textarea ${commonAttributes} rows="5">${escapeHtml(currentValue ?? "")}</textarea>`;
         break;
 
-      case "select":
+      case "select": {
+        // Optional selects start with an empty choice, so the value can be removed again
+        const emptyOptionHtml = field.emptyLabel ? `<option value="">${escapeHtml(field.emptyLabel)}</option>` : "";
         inputHtml = `
           <select ${commonAttributes}>
+            ${emptyOptionHtml}
             ${field.options
               .map(
                 (option) =>
@@ -95,6 +98,7 @@ export class RecordDialog {
               .join("")}
           </select>`;
         break;
+      }
 
       case "month":
         // DB stores a full date (2018-06-01), <input type="month"> wants "2018-06"

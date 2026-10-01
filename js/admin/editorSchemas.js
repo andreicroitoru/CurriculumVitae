@@ -1,8 +1,10 @@
 // Describes every editable table: sidebar entry, list columns and form fields.
 //
 // Field types: text, url, textarea, month, year, number, color, select
+// optionsFrom: a select whose options are the rows of another table (a nomenclator), e.g. collaboration types
 // width: "half" puts two fields side by side in the dialog (RO / EN pairs mostly)
-// emptyLabel: what the list shows when the value is null (e.g. end_date -> "Prezent")
+// emptyLabel: what the list shows when the value is null (e.g. end_date -> "Prezent");
+//   on a select it also adds an empty first option, so the value can be cleared
 // listColumns: which fields show up as columns in the table, in order
 
 const sortOrderField = {
@@ -38,11 +40,20 @@ export const editorSchemas = [
     title: "Experiență",
     icon: "briefcase",
     itemName: "job",
-    listColumns: ["job_title_ro", "company_name", "start_date", "end_date", "sort_order"],
+    listColumns: ["job_title_ro", "company_name", "collaboration_type_id", "start_date", "end_date", "sort_order"],
     fields: [
       { name: "job_title_ro", label: "Titlu (RO)", type: "text", required: true, width: "half" },
       { name: "job_title_en", label: "Titlu (EN)", type: "text", required: true, width: "half" },
-      { name: "company_name", label: "Companie", type: "text", required: true },
+      { name: "company_name", label: "Companie", type: "text", required: true, width: "half" },
+      {
+        name: "collaboration_type_id",
+        label: "Tip colaborare",
+        type: "select",
+        width: "half",
+        optionsFrom: { tableName: "collaboration_types", labelColumn: "name_ro" },
+        emptyLabel: "—",
+        hint: "Lista se editează în tab-ul „Tipuri colaborare”",
+      },
       { name: "location_ro", label: "Locație (RO)", type: "text", width: "half" },
       { name: "location_en", label: "Locație (EN)", type: "text", width: "half" },
       { name: "start_date", label: "Început", type: "month", required: true, width: "half" },
@@ -110,6 +121,19 @@ export const editorSchemas = [
     fields: [
       { name: "name_ro", label: "Nume (RO)", type: "text", required: true, width: "half" },
       { name: "name_en", label: "Nume (EN)", type: "text", required: true, width: "half" },
+      sortOrderField,
+    ],
+  },
+  {
+    tableName: "collaboration_types",
+    title: "Tipuri colaborare",
+    icon: "contract",
+    itemName: "tip de colaborare",
+    deleteWarning: "Joburile care îl folosesc rămân fără tip de colaborare.",
+    listColumns: ["name_ro", "name_en", "sort_order"],
+    fields: [
+      { name: "name_ro", label: "Denumire (RO)", type: "text", required: true, hint: "Ex.: Contract individual de muncă - normă întreagă" },
+      { name: "name_en", label: "Denumire (EN)", type: "text", required: true, width: "half", hint: "Ce apare pe site în engleză, ex.: Full-time" },
       sortOrderField,
     ],
   },

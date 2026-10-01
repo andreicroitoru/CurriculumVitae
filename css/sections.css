@@ -187,6 +187,11 @@
   font-size: 0.95rem;
 }
 
+/* "Plant an App · Full-time", like LinkedIn shows the employment type */
+.timelineItem__collaborationType {
+  color: var(--colorTextMuted);
+}
+
 .timelineItem__location {
   margin: 0.15rem 0 0;
   color: var(--colorTextMuted);

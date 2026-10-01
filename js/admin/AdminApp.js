@@ -29,6 +29,7 @@ class AdminApp {
 
     this.tableViews = new Map(); // tableName -> { tableView, viewElement }
     this.activeTableName = this.loadSavedTab();
+    this.isInitialLoadDone = false;
     this.toastTimeoutId = null;
   }
 
@@ -83,11 +84,16 @@ class AdminApp {
 
     // Load every table up front: they're tiny, and the sidebar can show all the counts right away
     await Promise.all([...this.tableViews.values()].map(({ tableView }) => tableView.load()));
+
+    // A list may have rendered before its nomenclator arrived (ids instead of names), redraw those once
+    this.isInitialLoadDone = true;
+    this.viewsDependingOn().forEach((tableView) => tableView.render());
   }
 
   async handleSignOut() {
     await this.authService.signOut();
     this.tableViews.clear();
+    this.isInitialLoadDone = false;
     this.viewsContainer.innerHTML = "";
     this.dashboardView.hidden = true;
     this.loginView.hidden = false;
@@ -120,7 +126,8 @@ class AdminApp {
         recordDialog: this.recordDialog,
         confirmDialog: this.confirmDialog,
         showToast: (message, options) => this.showToast(message, options),
-        onRowCountChange: (tableName, rowCount) => this.updateSidebarCount(tableName, rowCount),
+        onRowsLoaded: (tableName, rowCount) => this.handleRowsLoaded(tableName, rowCount),
+        getLookupOptions: (optionsFrom) => this.getLookupOptions(optionsFrom),
       });
 
       this.tableViews.set(schema.tableName, { tableView, viewElement });
@@ -159,6 +166,31 @@ class AdminApp {
     } catch {
       return editorSchemas[0].tableName;
     }
+  }
+
+  handleRowsLoaded(tableName, rowCount) {
+    this.updateSidebarCount(tableName, rowCount);
+
+    // Renaming or deleting a collaboration type changes what the jobs list shows (a delete also clears it
+    // on the jobs in the database), so the jobs reload too
+    if (this.isInitialLoadDone) {
+      this.viewsDependingOn(tableName).forEach((tableView) => tableView.load());
+    }
+  }
+
+  // Views with a select fed by tableName, or by any table when tableName is left out
+  viewsDependingOn(tableName) {
+    return [...this.tableViews.values()]
+      .map(({ tableView }) => tableView)
+      .filter((tableView) =>
+        tableName ? tableView.lookupTableNames.includes(tableName) : tableView.lookupTableNames.length > 0
+      );
+  }
+
+  // Options for a nomenclator select, from the rows that table's tab already loaded
+  getLookupOptions({ tableName, labelColumn }) {
+    const lookupRows = this.tableViews.get(tableName)?.tableView.rows ?? [];
+    return lookupRows.map((row) => ({ value: row.id, label: row[labelColumn] }));
   }
 
   updateSidebarCount(tableName, rowCount) {

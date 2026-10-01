@@ -58,7 +58,8 @@ supabase/
 | Tabel | Conținut |
 |---|---|
 | `profile` | un singur rând: nume, rol, locație, „Despre” |
-| `work_experience` | joburi (`end_date` gol = job actual) |
+| `work_experience` | joburi (`end_date` gol = job actual, `collaboration_type_id` = tipul de colaborare) |
+| `collaboration_types` | nomenclator: tipuri de colaborare PF - firmă (CIM normă întreagă / parțială, PFA, drepturi de autor, mandat etc.) |
 | `education` | studii |
 | `certifications` | certificări (`skill_level` 1–3) |
 | `skills` | competențe |
@@ -71,6 +72,8 @@ creează un user în Authentication și adaugă-l ca admin:
 insert into public.admin_users (user_id)
 select id from auth.users where email = 'email@exemplu.com';
 ```
+
+Un câmp de tip listă care ia valorile din alt tabel (ca „Tip colaborare” la experiență) se declară cu `optionsFrom` în `editorSchemas.js`; adminul reîncarcă singur lista de joburi când se modifică nomenclatorul.
 
 Un câmp nou în CV = coloană nouă în tabel + câmp în `js/admin/editorSchemas.js` + afișare în `CvRepository.js` / `CvRenderer.js`.
 

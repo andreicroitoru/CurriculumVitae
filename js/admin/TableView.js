@@ -8,23 +8,36 @@ const dateFormatter = new DateFormatter(translations.ro);
 // One admin tab: lists the rows of a table and opens RecordDialog / ConfirmDialog for CRUD.
 // The profile table (single row) is shown as a details card instead of a list.
 export class TableView {
-  constructor(containerElement, schema, { supabaseClient, recordDialog, confirmDialog, showToast, onRowCountChange }) {
+  constructor(containerElement, schema, { supabaseClient, recordDialog, confirmDialog, showToast, onRowsLoaded, getLookupOptions }) {
     this.containerElement = containerElement;
     this.schema = schema;
     this.supabaseClient = supabaseClient;
     this.recordDialog = recordDialog;
     this.confirmDialog = confirmDialog;
     this.showToast = showToast;
-    this.onRowCountChange = onRowCountChange;
+    this.onRowsLoaded = onRowsLoaded;
+    this.getLookupOptions = getLookupOptions;
 
     this.rows = [];
-    this.fieldsByName = Object.fromEntries(schema.fields.map((field) => [field.name, field]));
 
     this.containerElement.addEventListener("click", (event) => this.handleClick(event));
   }
 
   get tableQuery() {
     return this.supabaseClient.from(this.schema.tableName);
+  }
+
+  // Schema fields, with the options of nomenclator selects (optionsFrom) filled in from the other table's
+  // current rows. Read fresh every time, so a type added in its own tab shows up here right away.
+  get fields() {
+    return this.schema.fields.map((field) =>
+      field.optionsFrom ? { ...field, options: this.getLookupOptions(field.optionsFrom) } : field
+    );
+  }
+
+  // Tables this view reads labels from, e.g. work_experience -> ["collaboration_types"]
+  get lookupTableNames() {
+    return this.schema.fields.filter((field) => field.optionsFrom).map((field) => field.optionsFrom.tableName);
   }
 
   async load() {
@@ -38,11 +51,12 @@ export class TableView {
     }
 
     this.rows = data;
-    this.onRowCountChange(this.schema.tableName, data.length);
     this.render();
+    this.onRowsLoaded(this.schema.tableName, data.length);
   }
 
   render() {
+    this.fieldsByName = Object.fromEntries(this.fields.map((field) => [field.name, field]));
     const body = this.schema.isSingleRow ? this.renderDetailsCard() : this.renderListCard();
     this.containerElement.innerHTML = this.renderHeader() + body;
   }
@@ -112,7 +126,7 @@ export class TableView {
       return `<div class="glassCard emptyState"><p>Profilul nu e completat încă.</p><p class="adminHint">Apasă „Editează” ca să-l completezi.</p></div>`;
     }
 
-    const detailItems = this.schema.fields
+    const detailItems = Object.values(this.fieldsByName)
       .map(
         (field) => `
         <div class="detailsList__item ${field.type === "textarea" ? "isWide" : ""}">
@@ -168,7 +182,7 @@ export class TableView {
 
     this.recordDialog.open({
       title: `Adaugă ${this.schema.itemName}`,
-      fields: this.schema.fields,
+      fields: this.fields,
       values: { sort_order: nextSortOrder },
       submitLabel: "Adaugă",
       onSubmit: (rowValues) => this.saveRow(this.tableQuery.insert(rowValues), "Adăugat"),
@@ -178,7 +192,7 @@ export class TableView {
   openEditDialog(row) {
     this.recordDialog.open({
       title: `Editează ${this.schema.itemName}`,
-      fields: this.schema.fields,
+      fields: this.fields,
       values: row,
       onSubmit: (rowValues) => {
         // Profile always lives at id = 1; upsert also covers the very first save
@@ -202,7 +216,9 @@ export class TableView {
     const rowLabel = row[this.schema.listColumns[0]];
     const isConfirmed = await this.confirmDialog.ask({
       title: `Ștergi ${this.schema.itemName}?`,
-      message: `„${rowLabel}” dispare din CV. Acțiunea nu poate fi anulată.`,
+      message: [`„${rowLabel}” dispare din CV.`, this.schema.deleteWarning, "Acțiunea nu poate fi anulată."]
+        .filter(Boolean)
+        .join(" "),
     });
     if (!isConfirmed) return;
 

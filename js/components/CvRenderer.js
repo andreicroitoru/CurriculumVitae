@@ -110,7 +110,9 @@ export class CvRenderer {
         ${this.renderLogo(job.logoInitials, job.logoColor)}
         <div>
           <h3 class="timelineItem__title">${escapeHtml(this.localize(job.jobTitle))}</h3>
-          <p class="timelineItem__subtitle">${escapeHtml(job.companyName)}</p>
+          <p class="timelineItem__subtitle">
+            ${escapeHtml(job.companyName)}${job.collaborationType ? `<span class="timelineItem__collaborationType"> · ${escapeHtml(this.localize(job.collaborationType))}</span>` : ""}
+          </p>
           ${job.location ? `<p class="timelineItem__location">${escapeHtml(this.localize(job.location))}</p>` : ""}
           ${isCurrentJob ? `<span class="currentBadge">${this.labels.currentBadge}</span>` : ""}
         </div>

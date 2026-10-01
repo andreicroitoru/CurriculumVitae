@@ -10,7 +10,8 @@ export class CvRepository {
     // All five requests run in parallel, the page needs every one of them anyway
     const [profileRows, experienceRows, educationRows, certificationRows, skillRows] = await Promise.all([
       fetchRows("profile", "id=eq.1"),
-      fetchRows("work_experience", "order=sort_order"),
+      // The collaboration type name comes along in the same request (PostgREST follows the foreign key)
+      fetchRows("work_experience", "order=sort_order", "*,collaboration_types(name_ro,name_en)"),
       fetchRows("education", "order=sort_order"),
       fetchRows("certifications", "order=sort_order"),
       fetchRows("skills", "order=sort_order"),
@@ -37,6 +38,9 @@ export class CvRepository {
       workExperience: experienceRows.map((row) => ({
         jobTitle: toTranslatedText(row.job_title_ro, row.job_title_en),
         companyName: row.company_name,
+        collaborationType: row.collaboration_types
+          ? toTranslatedText(row.collaboration_types.name_ro, row.collaboration_types.name_en)
+          : null,
         location: row.location_ro ? toTranslatedText(row.location_ro, row.location_en) : null,
         startDate: toYearMonth(row.start_date),
         endDate: toYearMonth(row.end_date),
@@ -71,8 +75,8 @@ export class CvRepository {
   }
 }
 
-async function fetchRows(tableName, queryString) {
-  const response = await fetch(`${supabaseConfig.projectUrl}/rest/v1/${tableName}?select=*&${queryString}`, {
+async function fetchRows(tableName, queryString, selectedColumns = "*") {
+  const response = await fetch(`${supabaseConfig.projectUrl}/rest/v1/${tableName}?select=${selectedColumns}&${queryString}`, {
     headers: { apikey: supabaseConfig.publishableKey },
     cache: "no-store", // always show the latest data saved from admin.html
   });
