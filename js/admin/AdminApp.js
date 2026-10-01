@@ -6,6 +6,7 @@ import { AuthService } from "./AuthService.js";
 import { TableView } from "./TableView.js";
 import { RecordDialog } from "./RecordDialog.js";
 import { ConfirmDialog } from "./ConfirmDialog.js";
+import { reloadIfNewVersionDeployed } from "../utils/versionCheck.js";
 
 const TOAST_VISIBLE_MS = 2200;
 const ACTIVE_TAB_STORAGE_KEY = "cvAdminActiveTab";
@@ -183,4 +184,6 @@ class AdminApp {
   }
 }
 
+// Only checked on page load, never mid-edit, so an open dialog is never lost to a reload
+reloadIfNewVersionDeployed();
 new AdminApp().start();

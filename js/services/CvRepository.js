@@ -74,6 +74,7 @@ export class CvRepository {
 async function fetchRows(tableName, queryString) {
   const response = await fetch(`${supabaseConfig.projectUrl}/rest/v1/${tableName}?select=*&${queryString}`, {
     headers: { apikey: supabaseConfig.publishableKey },
+    cache: "no-store", // always show the latest data saved from admin.html
   });
 
   if (!response.ok) {

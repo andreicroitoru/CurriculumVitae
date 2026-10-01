@@ -6,7 +6,13 @@ Site-ul meu personal de prezentare / CV, în română și engleză.
 - **Admin:** https://andreicroitoru.github.io/CurriculumVitae/admin.html
 
 HTML, CSS și JavaScript simplu (ES modules), fără framework și fără pas de build.
-Conținutul CV-ului stă în **Supabase** (Postgres), site-ul e publicat cu GitHub Pages din ramura `main`.
+Conținutul CV-ului stă în **Supabase** (Postgres), site-ul e publicat cu GitHub Pages prin GitHub Actions (`.github/workflows/deploy.yml`) la fiecare push pe `main`.
+
+## Cache
+
+- Datele din Supabase se cer cu `cache: "no-store"`, deci orice modificare din admin apare la următorul refresh.
+- La deploy, workflow-ul adaugă `?v=<commit>` la toate fișierele CSS/JS și scrie `version.json`. Un deploy nou nu se amestecă niciodată cu fișiere vechi din cache.
+- La încărcare, pagina compară versiunea ei cu `version.json`; dacă e o copie veche, se reîncarcă singură o dată (`js/utils/versionCheck.js`).
 
 ## Cum funcționează
 

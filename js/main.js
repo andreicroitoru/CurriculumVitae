@@ -3,6 +3,7 @@ import { CvRenderer } from "./components/CvRenderer.js";
 import { LanguageSwitcher } from "./components/LanguageSwitcher.js";
 import { DateFormatter } from "./utils/DateFormatter.js";
 import { CvRepository } from "./services/CvRepository.js";
+import { reloadIfNewVersionDeployed } from "./utils/versionCheck.js";
 
 const LANGUAGE_STORAGE_KEY = "cvPreferredLanguage";
 const FADE_DURATION_MS = 180; // keep in sync with .pageContent transition in sections.css
@@ -98,4 +99,5 @@ class CvApp {
   }
 }
 
+reloadIfNewVersionDeployed();
 new CvApp().start();

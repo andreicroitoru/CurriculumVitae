@@ -9,6 +9,8 @@ Static CV site (RO/EN) on GitHub Pages, content in Supabase. No build step, no f
 - `js/admin/editorSchemas.js` - sidebar icon, list columns and form fields per table. New DB column = schema field + mapping in `CvRepository.js` + output in `CvRenderer.js`.
 - `supabase/migrations/` - schema, RLS, constraints. The owner runs these by hand in the Supabase SQL Editor; never assume a migration has been applied, write them so they can run on top of the previous ones.
 
+- `.github/workflows/deploy.yml` - deploys Pages and stamps `?v=<commit>` on every local CSS/JS URL and relative `import`. Keep imports static and relative (`from "./x.js"`) so the stamping catches them; `data-version="dev"` on `<html>` must stay as is in the source.
+
 ## Rules
 
 - Naming: camelCase in JS and CSS classes (`timelineItem__period`), snake_case in SQL.
