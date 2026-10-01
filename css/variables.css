@@ -1,0 +1,62 @@
+/*
+ * Design tokens.
+ * Light theme is the default, dark theme kicks in from the OS setting
+ * (or when something sets data-theme="dark" on <html>).
+ */
+
+:root {
+  --colorBackground: #f5f5f7;
+  --colorSurface: #ffffff;
+  --colorText: #1d1d1f;
+  --colorTextMuted: #6e6e73;
+  --colorDivider: rgba(0, 0, 0, 0.08);
+  --colorAccent: #0066cc;
+  --colorAccentSoft: rgba(0, 102, 204, 0.09);
+  --colorHeaderGlass: rgba(245, 245, 247, 0.72);
+  --colorSwitchTrack: rgba(118, 118, 128, 0.12);
+  --colorSwitchThumb: #ffffff;
+
+  --shadowCard: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.05);
+
+  --fontText: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --fontDisplay: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  --radiusCard: 18px;
+  --radiusPill: 980px;
+  --contentWidth: 46rem;
+  --pageGutter: 1.25rem;
+
+  --easeOutSoft: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --colorBackground: #000000;
+    --colorSurface: #1c1c1e;
+    --colorText: #f5f5f7;
+    --colorTextMuted: #98989d;
+    --colorDivider: rgba(255, 255, 255, 0.1);
+    --colorAccent: #2997ff;
+    --colorAccentSoft: rgba(41, 151, 255, 0.14);
+    --colorHeaderGlass: rgba(22, 22, 23, 0.72);
+    --colorSwitchTrack: rgba(118, 118, 128, 0.24);
+    --colorSwitchThumb: #636366;
+    --shadowCard: none;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --colorBackground: #000000;
+  --colorSurface: #1c1c1e;
+  --colorText: #f5f5f7;
+  --colorTextMuted: #98989d;
+  --colorDivider: rgba(255, 255, 255, 0.1);
+  --colorAccent: #2997ff;
+  --colorAccentSoft: rgba(41, 151, 255, 0.14);
+  --colorHeaderGlass: rgba(22, 22, 23, 0.72);
+  --colorSwitchTrack: rgba(118, 118, 128, 0.24);
+  --colorSwitchThumb: #636366;
+  --shadowCard: none;
+}

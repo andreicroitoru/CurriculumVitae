@@ -1,0 +1,339 @@
+.pageContent {
+  max-width: var(--contentWidth);
+  margin: 0 auto;
+  padding-inline: var(--pageGutter);
+  padding-block: 3.5rem 5rem;
+  transition: opacity 0.18s ease;
+}
+
+/* Added for a moment while switching language, so the text cross-fades */
+.pageContent.isFadingOut {
+  opacity: 0;
+}
+
+.cvSection {
+  padding-block: 0.5rem 2.75rem;
+  scroll-margin-top: 4rem;
+}
+
+.cvSection__title {
+  margin: 0 0 1rem;
+  font: 700 1.6rem/1.15 var(--fontDisplay);
+  letter-spacing: -0.025em;
+}
+
+/* ---- Hero ---- */
+
+.profileHero {
+  display: grid;
+  gap: 1.5rem;
+  padding-bottom: 3rem;
+}
+
+.profileHero__avatar {
+  display: grid;
+  place-items: center;
+  width: 5.5rem;
+  height: 5.5rem;
+  border-radius: 50%;
+  background: linear-gradient(160deg, #3a3a3c, #1d1d1f);
+  color: #f5f5f7;
+  font: 600 1.9rem/1 var(--fontDisplay);
+  letter-spacing: -0.02em;
+  box-shadow: var(--shadowCard);
+}
+
+.profileHero__location {
+  color: var(--colorTextMuted);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.profileHero__name {
+  margin: 0.15rem 0 0;
+  font: 700 clamp(2.6rem, 8vw, 4.25rem)/1.03 var(--fontDisplay);
+  letter-spacing: -0.035em;
+}
+
+.profileHero__headline {
+  margin: 0;
+  color: var(--colorTextMuted);
+  font: 600 clamp(1.3rem, 3.2vw, 1.75rem)/1.2 var(--fontDisplay);
+  letter-spacing: -0.02em;
+}
+
+.profileHero__headline strong {
+  color: var(--colorText);
+  font-weight: 600;
+}
+
+.profileHero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* ---- Quick stats under the hero ---- */
+
+.quickStats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px; /* the 1px gap + divider background draws the separators */
+  margin-bottom: 3.5rem;
+  overflow: hidden;
+  border-radius: var(--radiusCard);
+  background: var(--colorDivider);
+  box-shadow: var(--shadowCard);
+}
+
+.quickStats__item {
+  display: grid;
+  gap: 0.2rem;
+  padding: 1.1rem 1.15rem;
+  background: var(--colorSurface);
+}
+
+.quickStats__value {
+  font: 600 1.75rem/1.1 var(--fontDisplay);
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.quickStats__label {
+  color: var(--colorTextMuted);
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+@media (max-width: 520px) {
+  .quickStats {
+    grid-template-columns: 1fr;
+  }
+
+  .quickStats__item {
+    grid-template-columns: 5.5rem 1fr;
+    align-items: baseline;
+  }
+}
+
+/* ---- About ---- */
+
+.aboutText {
+  max-width: 38rem;
+  margin: 0;
+  font-size: 1.15rem;
+  line-height: 1.6;
+  letter-spacing: -0.014em;
+}
+
+/* ---- Experience / education list (iOS "inset grouped" style) ---- */
+
+.timelineList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow: hidden;
+  border-radius: var(--radiusCard);
+  background: var(--colorSurface);
+  box-shadow: var(--shadowCard);
+}
+
+.timelineItem {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2.75rem 1fr auto;
+  align-items: start;
+  gap: 0.25rem 1rem;
+  padding: 1.1rem 1.25rem;
+}
+
+/* Separator starts after the logo, like in iOS Settings */
+.timelineItem + .timelineItem::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 5rem;
+  border-top: 1px solid var(--colorDivider);
+}
+
+.timelineItem__logo {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 11px;
+  color: #fff;
+  font: 700 0.9rem/1 var(--fontDisplay);
+  letter-spacing: -0.02em;
+}
+
+.timelineItem__title {
+  margin: 0;
+  font: 600 1.05rem/1.3 var(--fontText);
+  letter-spacing: -0.015em;
+}
+
+.timelineItem__subtitle {
+  margin: 0.1rem 0 0;
+  font-size: 0.95rem;
+}
+
+.timelineItem__location {
+  margin: 0.15rem 0 0;
+  color: var(--colorTextMuted);
+  font-size: 0.85rem;
+}
+
+.timelineItem__period {
+  padding-top: 0.15rem;
+  color: var(--colorTextMuted);
+  font-size: 0.82rem;
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.currentBadge {
+  display: inline-block;
+  margin-top: 0.15rem;
+  padding: 0.15rem 0.55rem;
+  border-radius: var(--radiusPill);
+  background: var(--colorAccentSoft);
+  color: var(--colorAccent);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+@media (max-width: 520px) {
+  .timelineItem {
+    grid-template-columns: 2.75rem 1fr;
+  }
+
+  .timelineItem__period {
+    grid-column: 2;
+    padding-top: 0;
+    text-align: left;
+  }
+}
+
+/* ---- Certifications ---- */
+
+.certificateGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+  gap: 0.75rem;
+}
+
+.certificateCard {
+  display: grid;
+  align-content: start;
+  gap: 0.35rem;
+  padding: 1rem 1.1rem 1.1rem;
+  border-radius: var(--radiusCard);
+  background: var(--colorSurface);
+  box-shadow: var(--shadowCard);
+}
+
+.certificateCard__level {
+  color: var(--colorTextMuted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.certificateCard__name {
+  font: 600 1.3rem/1.15 var(--fontDisplay);
+  letter-spacing: -0.02em;
+}
+
+/* Three small bars: Basic / Intermediate / Advanced */
+.certificateCard__levelBars {
+  display: flex;
+  gap: 3px;
+  margin-top: 0.35rem;
+}
+
+.certificateCard__levelBars span {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--colorDivider);
+}
+
+.certificateCard__levelBars span.isFilled {
+  background: var(--colorAccent);
+}
+
+.certificateCard__issuer {
+  margin-top: 0.25rem;
+  color: var(--colorTextMuted);
+  font-size: 0.78rem;
+}
+
+/* ---- Skills ---- */
+
+.skillTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.skillTags li {
+  padding: 0.45rem 0.9rem;
+  border: 1px solid var(--colorDivider);
+  border-radius: var(--radiusPill);
+  background: var(--colorSurface);
+  box-shadow: var(--shadowCard);
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+
+/* ---- Contact ---- */
+
+.contactCard {
+  display: grid;
+  justify-items: start;
+  gap: 0.9rem;
+  padding: 2rem 1.5rem;
+  border-radius: 22px;
+  background: var(--colorSurface);
+  box-shadow: var(--shadowCard);
+}
+
+.contactCard p {
+  max-width: 32rem;
+  margin: 0;
+  color: var(--colorTextMuted);
+}
+
+.contactCard .cvSection__title {
+  margin: 0;
+}
+
+/* ---- Footer ---- */
+
+.siteFooter {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem;
+  max-width: var(--contentWidth);
+  margin: 0 auto;
+  padding: 1.5rem var(--pageGutter) 3rem;
+  border-top: 1px solid var(--colorDivider);
+  color: var(--colorTextMuted);
+  font-size: 0.78rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pageContent {
+    transition: none;
+  }
+}

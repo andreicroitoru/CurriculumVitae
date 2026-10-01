@@ -1,26 +1,57 @@
-# Andrei Croitoru — CV
+# CurriculumVitae
 
-Site personal de prezentare (RO / EN), static, fără build.
+Site-ul meu personal de prezentare / CV, în română și engleză.
+
+**Live:** https://andreicroitoru.github.io/CurriculumVitae/
+
+HTML, CSS și JavaScript simplu (ES modules), fără framework și fără pas de build.
+Publicat cu GitHub Pages direct din ramura `main`.
 
 ## Structură
 
 ```
-index.html        scheletul paginii
-css/styles.css    stiluri (temă luminoasă + întunecată)
-js/data.js        datele CV-ului — aici editezi conținutul
-js/i18n.js        textele interfeței în română și engleză
-js/app.js         randarea paginii și comutatorul de limbă
-assets/           favicon și alte resurse
+index.html                        scheletul paginii (header, main, footer)
+css/
+  variables.css                   culori, fonturi, dimensiuni (temă luminoasă + întunecată)
+  base.css                        reset și butoane
+  header.css                      header-ul sticky și comutatorul RO/EN
+  sections.css                    secțiunile CV-ului
+js/
+  main.js                         CvApp - pornește aplicația, schimbă limba
+  data/cvData.js                  conținutul CV-ului
+  i18n/translations.js            textele interfeței în RO și EN
+  components/CvRenderer.js        generează HTML-ul secțiunilor din cvData
+  components/LanguageSwitcher.js  comutatorul RO/EN (tap, drag, tastatură)
+  utils/DateFormatter.js          perioade și durate ("iun. 2018 – Prezent", "8 ani 5 luni")
+  utils/SpringAnimation.js        animație de tip spring pentru comutator
+  utils/escapeHtml.js
+assets/favicon.svg
 ```
 
-## Cum actualizezi CV-ul
+## Actualizare CV
 
-Editează `js/data.js` (experiență, educație, certificări, competențe), apoi fă commit și push. GitHub Pages republică site-ul automat.
+Tot conținutul e în `js/data/cvData.js`. Un job nou, de exemplu:
+
+```js
+{
+  jobTitle: { ro: "Senior Developer", en: "Senior Developer" },
+  companyName: "Firma X",
+  location: { ro: "București, România", en: "Bucharest, Romania" },
+  startDate: "2026-11",
+  endDate: null, // null = încă lucrez acolo
+  logoInitials: "FX",
+  logoColor: "#444444",
+},
+```
+
+După commit + push, GitHub Pages republică site-ul în ~1 minut.
 
 ## Rulare locală
+
+Fiind ES modules, pagina trebuie servită printr-un server (nu merge deschisă direct cu `file://`):
 
 ```bash
 python3 -m http.server 8000
 ```
 
-apoi deschide http://localhost:8000.
+apoi http://localhost:8000

@@ -1,0 +1,100 @@
+/* Sticky translucent header, same idea as the bar on apple.com */
+.siteHeader {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 10;
+  background: var(--colorHeaderGlass);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid var(--colorDivider);
+}
+
+.siteHeader__inner {
+  max-width: var(--contentWidth);
+  margin: 0 auto;
+  padding: 0.6rem var(--pageGutter);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.siteHeader__name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: -0.01em;
+}
+
+.siteHeader__nav {
+  display: flex;
+  gap: 1.1rem;
+  font-size: 0.8rem;
+}
+
+.siteHeader__nav a {
+  color: var(--colorTextMuted);
+}
+
+.siteHeader__nav a:hover {
+  color: var(--colorText);
+  text-decoration: none;
+}
+
+@media (max-width: 640px) {
+  .siteHeader__nav {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .siteHeader {
+    background: var(--colorBackground);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* ---- RO / EN segmented control ---- */
+
+.languageSwitch {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 6.5rem;
+  height: 1.9rem;
+  padding: 2px;
+  border-radius: 9px;
+  background: var(--colorSwitchTrack);
+  cursor: grab;
+  touch-action: none; /* we handle horizontal drag ourselves */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.languageSwitch.isDragging {
+  cursor: grabbing;
+}
+
+.languageSwitch__thumb {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  left: 2px;
+  width: calc(50% - 2px);
+  border-radius: 7px;
+  background: var(--colorSwitchThumb);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12), 0 3px 1px rgba(0, 0, 0, 0.04);
+  will-change: transform;
+}
+
+.languageSwitch__option {
+  position: relative;
+  z-index: 1;
+  border: 0;
+  border-radius: 7px;
+  background: none;
+  color: var(--colorText);
+  font: 600 0.78rem/1 var(--fontText);
+  letter-spacing: 0.02em;
+  cursor: inherit;
+}
